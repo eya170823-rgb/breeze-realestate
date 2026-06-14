@@ -1,85 +1,108 @@
-export default function PropertyDetail() {
+"use client";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+
+const properties = [
+  { id: 1, type: "원룸", address: "제주시 노형동", deposit: "500", monthly: "45", size: "20㎡", floor: "3층", status: "available", image: "" },
+  { id: 2, type: "투룸", address: "제주시 연동", deposit: "1000", monthly: "60", size: "33㎡", floor: "2층", status: "contract", image: "" },
+  { id: 3, type: "오피스텔", address: "제주시 노형동", deposit: "500", monthly: "55", size: "25㎡", floor: "5층", status: "available", image: "" },
+  { id: 4, type: "1.5룸", address: "제주시 이도동", deposit: "300", monthly: "40", size: "26㎡", floor: "2층", status: "reserved", image: "" },
+  { id: 5, type: "단기임대", address: "제주시 연동", deposit: "100", monthly: "80", size: "20㎡", floor: "1층", status: "available", image: "" },
+  { id: 6, type: "상가임대", address: "제주시 노형동", deposit: "2000", monthly: "120", size: "50㎡", floor: "1층", status: "available", image: "" },
+];
+
+const filters = ["전체", "오피스텔", "원룸", "1.5룸", "투룸", "단기임대", "상가임대"];
+
+const statusLabel: Record<string, { text: string; color: string }> = {
+  available: { text: "거래가능", color: "bg-green-100 text-green-700" },
+  contract: { text: "계약중", color: "bg-yellow-100 text-yellow-700" },
+  reserved: { text: "예약중", color: "bg-orange-100 text-orange-700" },
+  done: { text: "거래완료", color: "bg-gray-100 text-gray-500" },
+};
+
+export default function Properties() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [filter, setFilter] = useState("전체");
+
+  const filtered = filter === "전체" ? properties : properties.filter(p => p.type === filter);
+
   return (
     <main className="min-h-screen bg-white">
       <nav className="fixed top-0 w-full bg-white border-b border-gray-100 z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
           <a href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-gray-900">BREEZE</span>
-            <span className="text-sm text-gray-400">부동산중개</span>
+            <span style={{fontFamily:"'Playfair Display', serif"}} className="text-lg font-bold text-gray-900 tracking-widest">BREEZE</span>
+            <span className="text-gray-300">|</span>
+            <span className="text-sm font-bold text-amber-600">공실마스터</span>
           </a>
-          <div className="hidden md:flex gap-8 text-sm text-gray-600">
-            <a href="/properties" className="text-yellow-600 font-medium">매물보기</a>
-            <a href="/about" className="hover:text-yellow-600">소개</a>
-            <a href="/contact" className="hover:text-yellow-600">문의</a>
-          </div>
-          <a href="tel:010-2601-0110" className="bg-yellow-600 text-white px-4 py-2 text-sm rounded hover:bg-yellow-700">
-            010-2601-0110
-          </a>
+          <button onClick={() => setMenuOpen(!menuOpen)} className="text-gray-600 hover:text-amber-700">
+            {menuOpen ? <X size={22}/> : <Menu size={22}/>}
+          </button>
         </div>
+        {menuOpen && (
+          <div className="bg-white border-t border-gray-100 px-4 py-3 flex flex-col gap-3">
+            <a href="/" className="text-sm text-gray-700 hover:text-amber-700" onClick={() => setMenuOpen(false)}>홈</a>
+            <a href="/properties" className="text-sm text-gray-700 hover:text-amber-700" onClick={() => setMenuOpen(false)}>매물보기</a>
+            <a href="/about" className="text-sm text-gray-700 hover:text-amber-700" onClick={() => setMenuOpen(false)}>소개</a>
+            <a href="/contact" className="text-sm text-gray-700 hover:text-amber-700" onClick={() => setMenuOpen(false)}>문의</a>
+          </div>
+        )}
       </nav>
 
-      <section className="pt-24 pb-24 px-6">
-        <div className="max-w-4xl mx-auto">
-          <a href="/properties" className="text-sm text-gray-400 hover:text-yellow-600 mb-8 inline-block">
-            ← 매물 목록으로
-          </a>
-          <div className="bg-gray-100 h-80 rounded-lg flex items-center justify-center mb-8">
-            <span className="text-gray-400">사진 준비중</span>
+      <section className="pt-16 px-4 pb-4">
+        <div className="max-w-6xl mx-auto">
+          {/* 필터 */}
+          <div className="flex gap-2 overflow-x-auto py-3 mb-4 scrollbar-hide">
+            {filters.map(f => (
+              <button key={f} onClick={() => setFilter(f)}
+                className={`px-3 py-1 text-xs rounded-full whitespace-nowrap border transition-colors ${
+                  filter === f ? "bg-amber-700 text-white border-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-700 hover:text-amber-700"
+                }`}>
+                {f}
+              </button>
+            ))}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs bg-yellow-50 text-yellow-600 px-2 py-1 rounded">원룸</span>
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">매물 상세 정보</h1>
-              <p className="text-gray-500 mb-6">제주시 노형동</p>
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-gray-50 rounded p-4">
-                  <p className="text-xs text-gray-400 mb-1">보증금</p>
-                  <p className="font-bold text-gray-900">500만원</p>
+
+          {/* 매물 목록 */}
+          <div className="grid grid-cols-1 gap-4">
+            {filtered.map(p => (
+              <a key={p.id} href={`/properties/${p.id}`}
+                className="flex gap-3 border border-gray-100 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                {/* 사진 */}
+                <div className="w-28 h-28 bg-gray-100 flex-shrink-0 flex items-center justify-center">
+                  <span className="text-gray-300 text-xs">사진</span>
                 </div>
-                <div className="bg-gray-50 rounded p-4">
-                  <p className="text-xs text-gray-400 mb-1">월세</p>
-                  <p className="font-bold text-gray-900">45만원</p>
+                {/* 정보 */}
+                <div className="flex-1 py-3 pr-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded">{p.type}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded ${statusLabel[p.status].color}`}>
+                      {statusLabel[p.status].text}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-1">{p.address}</p>
+                  <p className="text-sm font-bold text-gray-900">
+                    보증금 {p.deposit}만 / 월 {p.monthly}만
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">{p.floor} · {p.size}</p>
                 </div>
-                <div className="bg-gray-50 rounded p-4">
-                  <p className="text-xs text-gray-400 mb-1">면적</p>
-                  <p className="font-bold text-gray-900">20㎡</p>
-                </div>
-                <div className="bg-gray-50 rounded p-4">
-                  <p className="text-xs text-gray-400 mb-1">층</p>
-                  <p className="font-bold text-gray-900">3층</p>
-                </div>
-              </div>
-              <div>
-                <h2 className="font-bold text-gray-900 mb-3">매물 설명</h2>
-                <p className="text-gray-500 text-sm leading-relaxed">
-                  구글 시트 연동 후 매물 설명이 자동으로 표시됩니다.
-                </p>
-              </div>
-            </div>
-            <div>
-              <div className="bg-gray-50 rounded-lg p-6 sticky top-24">
-                <h2 className="font-bold text-gray-900 mb-4">상담 문의</h2>
-                <a href="tel:010-2601-0110" className="block text-center bg-yellow-600 text-white py-3 rounded mb-3 hover:bg-yellow-700 text-sm">
-                  전화 상담
-                </a>
-                <a href="https://open.kakao.com" className="block text-center bg-yellow-400 text-gray-900 py-3 rounded hover:bg-yellow-500 text-sm font-medium">
-                  카카오톡 상담
-                </a>
-                <p className="text-xs text-gray-400 text-center mt-4">010-2601-0110</p>
-              </div>
-            </div>
+              </a>
+            ))}
           </div>
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-gray-400 py-12 px-6">
+      <footer className="bg-gray-900 py-8 px-4 mt-8">
         <div className="max-w-6xl mx-auto">
-          <p className="text-white font-bold text-lg mb-2">브리즈부동산중개</p>
-          <p className="text-sm">제주특별자치도 제주시</p>
-          <p className="text-sm mt-1">010-2601-0110</p>
-          <p className="text-xs mt-4 text-gray-600">© 2026 BREEZE 부동산중개. All rights reserved.</p>
+          <div style={{fontFamily:"'Playfair Display', serif"}} className="text-white text-lg font-bold mb-1">BREEZE</div>
+          <p className="text-gray-500 text-xs mb-4">부동산중개 · 제주특별자치도 제주시 · 010-2601-0110</p>
+          <div className="flex flex-wrap gap-3 mb-4">
+            <a href="sms:010-2601-0110" className="text-gray-400 hover:text-amber-600 text-xs">💬 문자</a>
+            <a href="https://open.kakao.com/o/sJ7BcDzi" className="text-gray-400 hover:text-amber-600 text-xs">🟡 카카오</a>
+            <a href="https://blog.naver.com/eya81" target="_blank" className="text-gray-400 hover:text-amber-600 text-xs">📝 블로그</a>
+            <a href="https://www.youtube.com/channel/UCdF1OeXfghX5dAg16EW0Vvw" target="_blank" className="text-gray-400 hover:text-amber-600 text-xs">▶ 유튜브</a>
+          </div>
+          <p className="text-gray-600 text-xs">© 2026 BREEZE 부동산중개. All rights reserved.</p>
         </div>
       </footer>
     </main>
